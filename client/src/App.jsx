@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-do
 import AddSupplier from "./pages/AddSupplier";
 import AddProduct from "./pages/AddProduct";
 import ViewProducts from "./pages/ViewProducts";
+import InstallAppButton from "./components/InstallAppButton";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               View Products
             </NavLink>
           </nav>
+          <InstallAppButton /> {/* Add the Install Button here */}
         </div>
       </div>
 
@@ -52,13 +54,6 @@ function App() {
             </Routes>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="bg-base-300 py-4 text-center bottom-">
-          <p className="text-sm text-base-content">
-            &copy; {new Date().getFullYear()} Shop Management. All rights reserved.
-          </p>
-        </footer>
       </div>
     </Router>
   );

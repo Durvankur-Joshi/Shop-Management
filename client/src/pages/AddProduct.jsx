@@ -41,6 +41,21 @@ const AddProduct = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <select
+        name="supplierId"
+        value={formData.supplierId}
+        onChange={handleChange}
+        className="select select-bordered w-full"
+        required
+      >
+        <option value="">Select Supplier</option>
+        {suppliers.map((supplier) => (
+          <option key={supplier._id} value={supplier._id}>
+            {supplier.name}
+          </option>
+        ))}
+      </select>
+      
       <input
         type="text"
         name="itemName"
@@ -68,20 +83,7 @@ const AddProduct = () => {
         className="input input-bordered w-full"
         required
       />
-      <select
-        name="supplierId"
-        value={formData.supplierId}
-        onChange={handleChange}
-        className="select select-bordered w-full"
-        required
-      >
-        <option value="">Select Supplier</option>
-        {suppliers.map((supplier) => (
-          <option key={supplier._id} value={supplier._id}>
-            {supplier.name}
-          </option>
-        ))}
-      </select>
+      
       <button type="submit" className="btn btn-primary w-full">
         Add Product
       </button>
