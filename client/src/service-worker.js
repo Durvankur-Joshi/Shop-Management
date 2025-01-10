@@ -1,5 +1,14 @@
 const CACHE_NAME = "shop-management-cache";
-const urlsToCache = ["/", "/index.html", "/manifest.json"];
+const urlsToCache = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png",
+  "/index.css",
+  "/bundle.js", // or any other JS file you are using
+  // Add any additional URLs you want to cache
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
