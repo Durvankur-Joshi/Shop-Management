@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getProductsBySupplier } from "../services/productService";
 import { getSuppliers } from "../services/supplierService";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ViewProducts = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -15,7 +17,7 @@ const ViewProducts = () => {
         const { suppliers } = await getSuppliers();
         setSuppliers(suppliers);
       } catch (err) {
-        setError("Failed to load suppliers.");
+        toast.error("Failed to load suppliers.");
         console.error(err);
       }
     };
@@ -34,7 +36,7 @@ const ViewProducts = () => {
         const { products } = await getProductsBySupplier(supplierId);
         setProducts(products);
       } catch (err) {
-        setError("Failed to load products.");
+        toast.error("Failed to load products.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -44,7 +46,6 @@ const ViewProducts = () => {
     }
   };
 
-  // Calculate the Grand Total
   const grandTotal = products.reduce(
     (total, product) => total + product.quantity * product.price,
     0
@@ -52,8 +53,8 @@ const ViewProducts = () => {
 
   return (
     <div className="p-4">
+      <ToastContainer position="top-right" autoClose={1000} />
       <h2 className="text-2xl font-bold mb-4">View Products</h2>
-      {error && <p className="text-error mb-4">{error}</p>}
       <select
         onChange={handleSupplierChange}
         className="select select-bordered w-full mb-4"
