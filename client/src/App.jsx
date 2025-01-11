@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-do
 import AddSupplier from "./pages/AddSupplier";
 import AddProduct from "./pages/AddProduct";
 import ViewProducts from "./pages/ViewProducts";
+import SupplierList from "./pages/SupplierList"; // Import the Supplier List page
 import InstallAppButton from "./components/InstallAppButton";
 
 function App() {
@@ -38,19 +39,28 @@ function App() {
             >
               View Products
             </NavLink>
+            <NavLink
+              to="/supplier-list" // Add a new navigation link for Supplier List
+              className={({ isActive }) =>
+                `btn btn-primary ${isActive ? "btn-active" : "btn-outline"}`
+              }
+            >
+              Supplier List
+            </NavLink>
           </nav>
           <InstallAppButton /> {/* Add the Install Button here */}
         </div>
       </div>
 
       {/* Page Content */}
-      <div className="flex flex-col h-full ">
+      <div className="flex flex-col h-full">
         <div className="flex-grow container mx-auto px-4 py-8">
           <div className="bg-base-100 shadow-xl rounded-lg p-6">
             <Routes>
               <Route path="/add-supplier" element={<AddSupplier />} />
               <Route path="/add-product" element={<AddProduct />} />
               <Route path="/view-products" element={<ViewProducts />} />
+              <Route path="/supplier-list" element={<SupplierList />} /> {/* Add Supplier List route */}
             </Routes>
           </div>
         </div>
