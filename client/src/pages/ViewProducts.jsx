@@ -72,31 +72,31 @@ const ViewProducts = () => {
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
-              <tr>
+              <tr className="text-xl text-white">
+                <th>Date</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total Price</th>
-                <th>Date</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-[20px]">
               {products.map((product) => (
                 <tr key={product._id}>
+                  <td>{new Date(product.createdAt).toLocaleDateString()}</td>
                   <td>{product.itemName}</td>
                   <td>{product.quantity}</td>
                   <td>{product.price}</td>
                   <td>{product.quantity * product.price}</td>
-                  <td>{new Date(product.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="3" className="text-right font-bold">
+                <td colSpan="3" className="text-right text-xl font-bold text-white">
                   Grand Total:
                 </td>
-                <td colSpan="2" className="font-bold">
+                <td colSpan="2" className="font-bold text-xl text-white">
                   {grandTotal}
                 </td>
               </tr>
