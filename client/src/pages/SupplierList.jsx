@@ -55,7 +55,6 @@ const SupplierList = () => {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Email</th>
                 <th>Phone</th>
                 <th>Actions</th>
               </tr>
@@ -64,8 +63,7 @@ const SupplierList = () => {
               {suppliers.map((supplier) => (
                 <tr key={supplier._id}>
                   <td>{supplier.name}</td>
-                  <td>{supplier.email}</td>
-                  <td>{supplier.phone}</td>
+                  <td>{supplier.contact}</td>
                   <td>
                     <button
                       onClick={() => handleDelete(supplier._id)}
