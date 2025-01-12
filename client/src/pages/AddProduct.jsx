@@ -10,6 +10,7 @@ const AddProduct = () => {
     Array.from({ length: 5 }, () => ({ itemName: "", quantity: 0, price: 0, amount: 0 }))
   );
   const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -28,19 +29,19 @@ const AddProduct = () => {
     setRows((prevRows) => {
       const updatedRows = [...prevRows];
       const updatedRow = { ...updatedRows[index], [field]: value };
-  
+
       // Calculate the amount immediately based on the latest values
       if (field === "quantity" || field === "price") {
         const quantity = field === "quantity" ? parseInt(value) || 0 : updatedRow.quantity;
         const price = field === "price" ? parseFloat(value) || 0 : updatedRow.price;
         updatedRow.amount = quantity * price;
       }
-  
+
       updatedRows[index] = updatedRow;
       return updatedRows;
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedSupplier) {
@@ -48,6 +49,7 @@ const AddProduct = () => {
       return;
     }
 
+    setIsLoading(true); // Start loading
     try {
       let addedProducts = 0;
       for (const product of rows) {
@@ -64,15 +66,17 @@ const AddProduct = () => {
       }
 
       setRows(
-        Array.from({ length: 5 }, () => ({ itemName: "", quantity , price, amount}))
+        Array.from({ length: 5 }, () => ({ itemName: "", quantity: 0, price: 0, amount: 0 }))
       );
       setSelectedSupplier("");
     } catch (error) {
       console.error(error);
+      toast.error("Failed to add products.");
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
-  // Memoized net amount calculation to prevent unnecessary recalculations
   const netAmount = useMemo(() => {
     return rows.reduce((total, row) => total + row.amount, 0);
   }, [rows]);
@@ -136,7 +140,7 @@ const AddProduct = () => {
                       type="number"
                       value={row.price}
                       onChange={(e) =>
-                        handleInputChange(index, "price", parseFloat(e.target.value) )
+                        handleInputChange(index, "price", parseFloat(e.target.value))
                       }
                       className="input input-bordered w-full"
                     />
@@ -157,8 +161,12 @@ const AddProduct = () => {
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="btn btn-primary w-full mt-4">
-          Submit Products
+        <button
+          type="submit"
+          className="btn btn-primary w-full mt-4"
+          disabled={isLoading} // Disable when loading
+        >
+          {isLoading ? "Submitting..." : "Submit Products"}
         </button>
       </form>
 
