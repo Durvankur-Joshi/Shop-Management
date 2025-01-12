@@ -9,6 +9,7 @@ const AddSupplier = () => {
     contact: "",
     address: "",
   });
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,6 +17,7 @@ const AddSupplier = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
     try {
       await addSupplier(formData);
       toast.success("Supplier added successfully!");
@@ -23,6 +25,8 @@ const AddSupplier = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to add supplier.");
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -57,8 +61,12 @@ const AddSupplier = () => {
           className="input input-bordered w-full"
           required
         />
-        <button type="submit" className="btn btn-primary w-full">
-          Add Supplier
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={isLoading} // Disable when loading
+        >
+          {isLoading ? "Adding..." : "Add Supplier"}
         </button>
       </form>
     </>
