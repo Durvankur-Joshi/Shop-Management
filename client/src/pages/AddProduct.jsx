@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { addProduct } from "../services/productService";
 import { getSuppliers } from "../services/supplierService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddProduct = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [rows, setRows] = useState(
-    Array(5).fill({ itemName: "", quantity: 0, price: 0, amount: 0 }) // Static 5 rows
+    Array.from({ length: 5 }, () => ({ itemName: "", quantity: 0, price: 0, amount: 0 }))
   );
   const [selectedSupplier, setSelectedSupplier] = useState("");
 
@@ -16,47 +18,64 @@ const AddProduct = () => {
         setSuppliers(suppliers);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to fetch suppliers!");
       }
     };
     fetchSuppliers();
   }, []);
 
   const handleInputChange = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
-
-    // Automatically calculate "amount" when quantity or price changes
-    if (field === "quantity" || field === "price") {
-      updatedRows[index].amount =
-        (updatedRows[index].quantity || 0) * (updatedRows[index].price || 0);
-    }
-
-    setRows(updatedRows);
+    setRows((prevRows) => {
+      const updatedRows = [...prevRows];
+      const updatedRow = { ...updatedRows[index], [field]: value };
+  
+      // Calculate the amount immediately based on the latest values
+      if (field === "quantity" || field === "price") {
+        const quantity = field === "quantity" ? parseInt(value) || 0 : updatedRow.quantity;
+        const price = field === "price" ? parseFloat(value) || 0 : updatedRow.price;
+        updatedRow.amount = quantity * price;
+      }
+  
+      updatedRows[index] = updatedRow;
+      return updatedRows;
+    });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedSupplier) {
-      alert("Please select a supplier!");
+      toast.warning("Please select a supplier!");
       return;
     }
 
     try {
+      let addedProducts = 0;
       for (const product of rows) {
         if (product.itemName && product.quantity > 0 && product.price > 0) {
           await addProduct({ ...product, supplierId: selectedSupplier });
+          addedProducts++;
         }
       }
-      alert("Products added successfully!");
-      setRows(Array(5).fill({ itemName: "", quantity: 0, price: 0, amount: 0 }));
+
+      if (addedProducts > 0) {
+        toast.success(`${addedProducts} product(s) added successfully!`);
+      } else {
+        toast.info("No valid products to add!");
+      }
+
+      setRows(
+        Array.from({ length: 5 }, () => ({ itemName: "", quantity , price, amount}))
+      );
       setSelectedSupplier("");
     } catch (error) {
       console.error(error);
-      alert("Failed to add products.");
     }
   };
 
-  const netAmount = rows.reduce((total, row) => total + row.amount, 0);
+  // Memoized net amount calculation to prevent unnecessary recalculations
+  const netAmount = useMemo(() => {
+    return rows.reduce((total, row) => total + row.amount, 0);
+  }, [rows]);
 
   return (
     <div className="p-4">
@@ -100,7 +119,6 @@ const AddProduct = () => {
                         handleInputChange(index, "itemName", e.target.value)
                       }
                       className="input input-bordered w-full"
-                      required
                     />
                   </td>
                   <td>
@@ -108,10 +126,9 @@ const AddProduct = () => {
                       type="number"
                       value={row.quantity}
                       onChange={(e) =>
-                        handleInputChange(index, "quantity", parseInt(e.target.value) || 0)
+                        handleInputChange(index, "quantity", parseInt(e.target.value))
                       }
                       className="input input-bordered w-full"
-                      required
                     />
                   </td>
                   <td>
@@ -119,13 +136,12 @@ const AddProduct = () => {
                       type="number"
                       value={row.price}
                       onChange={(e) =>
-                        handleInputChange(index, "price", parseFloat(e.target.value) || 0)
+                        handleInputChange(index, "price", parseFloat(e.target.value) )
                       }
                       className="input input-bordered w-full"
-                      required
                     />
                   </td>
-                  <td>{row.amount}</td>
+                  <td>{row.amount.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -134,7 +150,7 @@ const AddProduct = () => {
                 <td colSpan="3" className="text-right font-bold">
                   Net Amount:
                 </td>
-                <td className="font-bold">{netAmount}</td>
+                <td className="font-bold">{netAmount.toFixed(2)}</td>
               </tr>
             </tfoot>
           </table>
@@ -145,6 +161,9 @@ const AddProduct = () => {
           Submit Products
         </button>
       </form>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };
